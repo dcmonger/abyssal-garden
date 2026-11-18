@@ -50,10 +50,53 @@ const qFromY = (nx, ny, nz) => {
   const q = [nz, 0, -nx, 1 + ny]; const l = hypot(...q); return q.map((v) => v / l);
 };
 
-// world grid
-const NX = 512, NY = 80, NZ = 512, VS = 0.75, OX = -192, OY = -56, OZ = -192;
-const CELLS = 16, CELLW = 24; // culling grid over XZ
-const NCHUNK = 7; // 3 small + 3 large rock chunk meshes + pebbles
+// ---------------------------------------------------------------- the neighbourhood around the yard
+// Streets run on a grid: avenues (along z) at x = AV0 + k * BLX, streets (along x) at z = ST0 + k * BLZ. Each block is two rows
+// of houses back to back: their fronts are ROW from the block's middle line, their back yards meet on it. The yard's block is
+// centred on (0, BCZ): its middle line is the garden's back fence, and the garden's house stands in the north row.
+// East of the avenue at PARKX there are no streets: that side is the park.
+// A row is NLOT lots of LOTW (about 34 ft): an odd number, so the garden's lot sits in the middle of its row, at x = 0. A block
+// is the row plus a sidewalk at each end; the avenues run halfway between blocks. East of the third avenue it is park.
+const LOTW = 10.5, NLOT = 11, WALKW = 7.5, ROWL = LOTW * NLOT, BLX = ROWL + 2 * WALKW, AV0 = BLX / 2, PARKX = AV0 + 2 * BLX;
+const BCZ = -9, ROW = 34.3, BLZ = 2 * (ROW + WALKW), ST0 = BCZ + ROW + WALKW, ROADW = 4.5;
+// culling chunks, one block each: chunk (i, j) is centred on (BLX * i, BLZ * j + BCZ); from i = 3 east it is park
+const CI0 = -7, CI1 = 6, CJ0 = -5, CJ1 = 5, NCI = CI1 - CI0 + 1, NCJ = CJ1 - CJ0 + 1, NCH = NCI * NCJ;
+const TANK = [470, 40], POND = [545, -150];   // the water tank on the park's hilltop, the pond below it
+const FLYX0 = -400, FLYX1 = 700, FLYZ0 = -300, FLYZ1 = 270, FLYTOP = 140;   // how far the camera may go
+// ground height: flat around the yard, rising toward the park hill. The shaders have the same function (ht in S_G)
+const HT0 = (x, z) => {
+  const s = sstep(62, 170, hypot(x, z + 14)), qx = x - TANK[0], qz = z - TANK[1];
+  return s * (6 + 16 * sstep(-80, 420, x) + 34 * exp(-(qx * qx + qz * qz) / 45000) + 5 * sin(x * 0.012 + z * 0.007 + 1) * sin(z * 0.011 - x * 0.004 + 2)
+    + 2.5 * sin(x * 0.031 + 0.5) * sin(z * 0.027 + 1.3));
+};
+// the pond is a basin dug into the hill: a flat bottom, and a bank that stays above the water all round (on the downhill
+// side it is built up), blending back into the hillside further out. Water level: PONDY
+const PBC = HT0(POND[0], POND[1]);
+// the water tank stands on a level pad cut into the summit
+const TKY = HT0(TANK[0], TANK[1]);
+// The houses are built into the hill: the inside of every block (the back yards) lies a storey, STEP, above the streets and
+// sidewalks round it. The ground steps down under the houses' fronts and, at the ends of the rows, at a retaining wall.
+// blockIn(x, z): 1 inside a block (behind the house fronts), 0 on the streets, the park and everywhere else
+const STEP = 2.9;
+const blockIn = (x, z) => {
+  const bi = round(x / BLX), bj = round((z - BCZ) / BLZ);
+  if (bi < CI0 || bi > 2 || bj < CJ0 || bj > CJ1) return 0;
+  return sstep(ROW - 0.95, ROW - 2.5, abs(z - BCZ - BLZ * bj)) * sstep(ROWL / 2 + 0.02, ROWL / 2 - 0.3, abs(x - BLX * bi));
+};
+const PONDY = PBC - 1.6 - STEP;
+const HT = (x, z) => HTb(x, z) - STEP * (1 - blockIn(x, z));
+const HTb = (x, z) => {
+  let h = HT0(x, z); const t = hypot(x - TANK[0], z - TANK[1]);
+  if (t < 40) h = mix(TKY, h, sstep(19, 40, t));
+  // the pond's shore wanders: its radius changes with the direction
+  const a = atan2(z - POND[1], x - POND[0]), r = hypot(x - POND[0], z - POND[1]) * (1 + 0.12 * sin(a * 3 + 1) + 0.07 * sin(a * 5 + 4));
+  return r > 60 ? h : mix(mix(PBC - 4, max(h, PBC - 1), sstep(22, 34, r)), h, sstep(34, 60, r));
+};
+
+// world grid: the culling cells cover 64 m x 64 m around the yard
+const OX = -32, OZ = -32, CELLS = 32, CELLW = 2;
+const NCHUNK = 4; // ground clutter meshes: 2 mulch chips, pebble, clod
+const FOGN = 64;  // size of the fog noise volume
 
 // ---------------------------------------------------------------- naive surface nets
 // D: scalar field (>0 inside), dims nx,ny,nz. Returns grid-space positions + triangle indices.

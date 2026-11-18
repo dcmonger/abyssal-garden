@@ -1,9 +1,11 @@
 // ============================================================================
 // development tools: only in dev.html (npm run build:dev), never in index.html
 // ============================================================================
-//   F    fly the camera along the scripted path (FLY in main.js), one minute through the whole world
+//   F    fly the camera along the scripted path (FLY in main.js), 90 s through the yard and the neighbourhood
 //   B    the same flight as a benchmark: the resolution stays fixed, every frame is timed, the result is shown at the end
 //   F, B or 1-6 during a flight stop it
+// window.cap(o) holds the scene still for a screenshot: o = { pose: [x, y, z, tx, ty, tz] or fly: seconds along the path,
+// t: scene time, dawn, grow }; window.cap() lets it run again
 {
   const LOGN = 1 << 16, logFrame = new Float32Array(LOGN), logGpu = new Float32Array(LOGN);
   let flying = false, bench = false, last = 0, nFrame = 0, nGpu = 0;
@@ -16,7 +18,21 @@
   };
   // frame() moves the free camera and then calls render(): step in between and put the camera on the path instead
   const draw = render;
+  let held = null;
+  window.cap = (o) => {
+    held = o;
+    if (o) { pix = PIXMAX; det = 1; dynT = -Infinity; resize(); ui(false); F[VX] = F[VY] = F[VZ] = 0; for (const id of ['o', 't']) $(id).style.display = 'none'; }
+    return W + 'x' + H;
+  };
+  window.fps = () => F[GPU];
+  window.camPos = () => [F[CX], F[CY], F[CZ]];
+  window.groundAt = (x, z) => HT(x, z);
+  window.goTo = (...a) => { lookAt(...a); F[VX] = F[VY] = F[VZ] = 0; };
   render = () => {
+    if (held) {
+      if (held.fly !== undefined) { F[FLT] = held.fly; flyAt(); } else lookAt(...held.pose);
+      F[TIME] = held.t; F[DAWN] = held.dawn; F[GROW] = held.grow;
+    }
     if (flying) {
       const dtr = F[LAST] - last; last = F[LAST];
       F[FLT] += min(dtr / 1000, 0.1); flyAt();

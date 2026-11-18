@@ -2,17 +2,17 @@
 <html lang=en>
 <head>
 <meta charset=utf-8>
-<title>Abyssal Garden</title>
+<title>Marine Layer</title>
 <meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=theme-color content=#03131c>
+<meta name=theme-color content=#171d22>
 <style>
 /* The class on <body> is the state of the page:
    l = loading, m = menu, g = in the scene (g p while the mouse is captured), l e = failed to start */
-html { background: #03131c; }
+html { background: #171d22; }
 body {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%; margin: 0; overflow: hidden;
-  background: radial-gradient(#0b3a4d, #03131c 70%);
-  font: 700 clamp(13px, .7vw + .9vh, 36px)/1.4 system-ui, sans-serif; color: #e8fbff;
+  background: radial-gradient(#4a5560, #171d22 70%);
+  font: 700 clamp(13px, .7vw + .9vh, 36px)/1.4 system-ui, sans-serif; color: #f4f1ea;
   -webkit-user-select: none; user-select: none;
 }
 /* a phone held upright gets the whole page turned on its side, so the scene is always landscape */
@@ -20,7 +20,7 @@ body {
   body { width: 100dvh; height: 100dvw; transform-origin: 0 0; transform: rotate(90deg) translateY(-100%); }
 }
 
-/* the scene: blurred and dimmed behind the menu, comes into focus when you dive */
+/* the scene: blurred and dimmed behind the menu, comes into focus when you step outside */
 canvas {
   position: absolute; width: 100%; height: 100%; touch-action: none; cursor: crosshair;
   transition: filter 1s, transform 1s, opacity 2s;
@@ -31,28 +31,28 @@ body:not(.g) canvas { filter: blur(1vmax) brightness(.5); transform: scale(1.06)
 /* menu: the loading bar and the buttons share one grid cell, so nothing jumps when they swap */
 #m {
   position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: min(2.2em, 6vmin);
-  padding: 1em 1em 4.5em; text-align: center; background: radial-gradient(#03131c00 30%, #03131ccc);
+  padding: 1em 1em 4.5em; text-align: center; background: radial-gradient(#171d2200 30%, #171d22cc);
   transition: opacity .5s, visibility .5s;
 }
 .g #m, .m #l, .l #g { opacity: 0; visibility: hidden; }
 h1 {
   margin: 0; font: 900 4.4em/1 system-ui, sans-serif; letter-spacing: .05em; text-transform: uppercase;
-  color: #0000; background: linear-gradient(#fff 25%, #7ff3ff 60%, #14a9c4);
+  color: #0000; background: linear-gradient(#fff 25%, #ffd9a8 60%, #d98a4e);
   -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 .06em .2em #000c);
 }
 p { margin: 0; }
 #a { display: grid; width: 27em; max-width: 100%; }
 #a > * { grid-area: 1/1; transition: opacity .8s, visibility .8s; }
 #s, #w, #q, #k, #h { font-size: .8em; letter-spacing: .12em; text-transform: uppercase; }
-#w { margin-top: 1.2em; color: #7ff3ff; text-wrap: balance; }
+#w { margin-top: 1.2em; color: #ffd9a8; text-wrap: balance; }
 
 /* loading bar */
 #p {
-  height: .5em; margin: .4em 0 1em; overflow: hidden; border-radius: 1em; background: #03131c;
-  box-shadow: 0 0 0 2px #7ff3ff80, 0 0 1.5em #14a9c4;
+  height: .5em; margin: .4em 0 1em; overflow: hidden; border-radius: 1em; background: #171d22;
+  box-shadow: 0 0 0 2px #ffd9a880, 0 0 1.5em #d98a4e;
 }
 #b {
-  display: block; height: 100%; background: linear-gradient(90deg, #14a9c4, #9ff6ff);
+  display: block; height: 100%; background: linear-gradient(90deg, #d98a4e, #ffe3bd);
   transform: scaleX(0); transform-origin: 0; will-change: transform;
 }
 .e #p { visibility: hidden; }
@@ -63,15 +63,15 @@ button, a {
   display: flex; align-items: center; justify-content: center; gap: .6em; padding: .8em 1.4em; border: 0;
   border-radius: .5em; background: #fff; box-shadow: inset 0 -.2em #0003, 0 .3em 1em #0009;
   font: 800 1em/1.2 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
-  color: #03222d; cursor: pointer; transition: transform .12s, filter .12s;
+  color: #22292f; cursor: pointer; transition: transform .12s, filter .12s;
 }
 button:hover, a:hover { transform: translateY(-.12em); filter: brightness(1.15); }
 button:active, a:active { transform: translateY(.1em); filter: brightness(.9); }
 :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 #g { display: grid; gap: min(1.2em, 3.5vmin); }
 #d {
-  padding: .9em; background: linear-gradient(#9ff6ff, #19c3d6); font-size: 1.3em;
-  box-shadow: inset 0 -.2em #0003, 0 0 2em #19c3d6b3;
+  padding: .9em; background: linear-gradient(#ffe3bd, #f0a765); font-size: 1.3em;
+  box-shadow: inset 0 -.2em #0003, 0 0 2em #f0a765b3;
 }
 
 /* GitHub and Ko-fi: always at the bottom of the menu, in their own colours */
@@ -80,23 +80,23 @@ a + a { background: #ff5e5b; color: #fff; }
 svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 
 /* dark plates under the dive button: detail level, list of controls, touch hint */
-#q, #k, #h { padding: 1em 1.6em; border-radius: .7em; background: #03131cb3; }
+#q, #k, #h { padding: 1em 1.6em; border-radius: .7em; background: #171d22b3; }
 
 /* detail level: three buttons in a row, the current one lit */
 #q { display: flex; align-items: center; gap: .4em; padding: .4em; }
-#q span { flex: 1; color: #7ff3ff; }
-#q button { flex: 1.2; padding: .7em 0; background: none; box-shadow: none; color: #e8fbff; }
-#q button:hover { background: #7ff3ff33; }
-#q .on { background: linear-gradient(#9ff6ff, #19c3d6); box-shadow: inset 0 -.2em #0003; color: #03222d; pointer-events: none; }
+#q span { flex: 1; color: #ffd9a8; }
+#q button { flex: 1.2; padding: .7em 0; background: none; box-shadow: none; color: #f4f1ea; }
+#q button:hover { background: #ffd9a833; }
+#q .on { background: linear-gradient(#ffe3bd, #f0a765); box-shadow: inset 0 -.2em #0003; color: #22292f; pointer-events: none; }
 
 /* list of controls: two groups, key caps right-aligned against their labels */
 #k { display: flex; justify-content: center; gap: 2em; text-align: left; }
 #k p { display: grid; grid-template-columns: auto auto; align-content: start; align-items: center; gap: .55em .9em; }
-#k p + p { padding-left: 2em; border-left: 2px solid #7ff3ff40; }
+#k p + p { padding-left: 2em; border-left: 2px solid #ffd9a840; }
 #k i { display: flex; justify-self: end; align-items: center; gap: .25em; font-style: normal; }
 #k b {
-  min-width: 1.1em; padding: .2em .5em; border-radius: .35em; background: #e8fbff;
-  box-shadow: inset 0 -.15em #0004; color: #03222d; text-align: center;
+  min-width: 1.1em; padding: .2em .5em; border-radius: .35em; background: #f4f1ea;
+  box-shadow: inset 0 -.15em #0004; color: #22292f; text-align: center;
 }
 #h { display: none; }
 @media (pointer: coarse), (max-height: 30em) {
@@ -108,11 +108,19 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 
 /* in the scene: a small menu button (hidden while the mouse is captured, Esc does the same) and the stats line */
 #o {
-  position: absolute; top: .6em; right: .6em; display: none; padding: .3em .6em; background: #03222dd9;
-  box-shadow: inset 0 0 0 2px #7ff3ff, 0 .3em 1em #0009; font-size: 1.3em; color: #e8fbff; opacity: .8;
+  position: absolute; top: .6em; right: .6em; display: none; padding: .3em .6em; background: #22292fd9;
+  box-shadow: inset 0 0 0 2px #ffd9a8, 0 .3em 1em #0009; font-size: 1.3em; color: #f4f1ea; opacity: .8;
 }
 .g #o { display: flex; }
 .p #o { display: none; }
+/* time-lapse slider: seedling to harvest. The mouse wheel and the arrow keys turn it while the mouse is captured */
+#t {
+  position: absolute; left: 50%; bottom: 1.2em; display: none; align-items: center; gap: .9em; width: min(30em, 80%);
+  padding: .5em 1.2em; border-radius: 2em; background: #171d2299; transform: translateX(-50%);
+  font-size: .7em; letter-spacing: .12em; text-transform: uppercase; opacity: .85;
+}
+.g #t { display: flex; }
+#r { flex: 1; height: 1.6em; margin: 0; accent-color: #f0a765; cursor: pointer; }
 #i {
   position: absolute; top: 1em; left: 1.2em; margin: 0; font: .8em/1.6 ui-monospace, Consolas, monospace;
   white-space: pre-wrap; text-shadow: 0 1px 4px #000; pointer-events: none;
@@ -122,26 +130,28 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 <body class=l>
 <canvas id=c></canvas>
 <div id=m>
-  <h1>Abyssal Garden</h1>
+  <h1>Marine Layer</h1>
   <div id=a>
-    <div id=l><div id=p><i id=b></i></div><p id=s>Diving…</p><p id=w hidden>Use Google Chrome for optimal experience</p></div>
+    <div id=l><div id=p><i id=b></i></div><p id=s>Waking up…</p><p id=w hidden>Use Google Chrome for optimal experience</p></div>
     <div id=g>
-      <button id=d>Dive in</button>
+      <button id=d>Step outside</button>
       <p id=q><span>Detail</span><button>Low</button><button>Medium</button><button>High</button></p>
       <div id=k>
         <p>
-          <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Swim
+          <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Move
           <i><b>Q</b><b>E</b></i>Down / up
           <i><b>Shift</b></i>Faster
-          <i><b>1</b>–<b>6</b></i>Viewpoints
+          <i><b>1</b>–<b>9</b></i>Viewpoints
         </p>
         <p>
+          <i><b>Wheel</b><b>←</b><b>→</b></i>Season
+          <i><b>T</b></i>Time-lapse
           <i><b>Esc</b></i>Menu
           <i><b>M</b></i>Mute
           <i><b>H</b></i>Stats
         </p>
       </div>
-      <p id=h>Hold to swim forward · slide to steer · second finger to go faster</p>
+      <p id=h>Hold to move forward · slide to steer · second finger to go faster · drag the slider to grow the garden</p>
     </div>
   </div>
   <p id=f>
@@ -150,6 +160,7 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
   </p>
 </div>
 <button id=o aria-label=Menu>≡</button>
+<label id=t>Seedling<input id=r type=range min=0 max=1000 value=1000 aria-label="Season, from seedling to harvest">Harvest</label>
 <pre id=i></pre>
 <script>
 /*SCRIPT*/
